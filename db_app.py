@@ -11,23 +11,14 @@ db = SQLAlchemy(app)
 ma = Marshmallow(app)
 api = Api(app)
 
-
 class Student(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50))
     grade = db.Column(db.String(255))
+    age = db.Column(db.String(255))
 
     def __repr__(self):
         return '<Student %s>' % self.name
-
-
-class StudentSchema(ma.Schema):
-    class Meta:
-        fields = ("id", "name", "grade")
-
-
-student_schema = StudentSchema()
-students_schema = StudentSchema(many=True)
 
 class Teacher(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -36,12 +27,17 @@ class Teacher(db.Model):
 
     def __repr__(self):
         return '<Teacher %s>' % self.name
-
+    
+class StudentSchema(ma.Schema):
+    class Meta:
+        fields = ("id", "name", "grade", "age")
 
 class TeacherSchema(ma.Schema):
     class Meta:
         fields = ("id", "name", "school")
 
+student_schema = StudentSchema()
+students_schema = StudentSchema(many=True)
 
 teacher_schema = TeacherSchema()
 teachers_schema = TeacherSchema(many=True)
@@ -56,6 +52,7 @@ class StudentListResource(Resource):
         new_student = Student(
             name=request.json['name'],
             grade=request.json['grade']
+            age=request.json['age']
         )
         db.session.add(new_student)
         db.session.commit()
@@ -74,6 +71,8 @@ class StudentResource(Resource):
             student.name = request.json['name']
         if 'grade' in request.json:
             student.grade = request.json['grade']
+        if 'age' in request.json:
+            student.age = request.json['age']
 
         db.session.commit()
         return student_schema.dump(student)
@@ -109,7 +108,7 @@ class TeacherResource(Resource):
 
         if 'name' in request.json:
             teacher.name = request.json['name']
-        if 'grade' in request.json:
+        if 'school' in request.json:
             teacher.grade = request.json['school']
 
         db.session.commit()
