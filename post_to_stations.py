@@ -5,10 +5,10 @@ from bart_api import BartApi
 bart = BartApi()
 stations = bart.get_stations()
 
-def xml_to_dict(element):
-    if element.text == None and len(element.attrib):
-        return element.tag, element.attrib
-    return element.tag, dict(map(xml_to_dict, element)) or element.text
+def xml_to_dict(etree_elem):
+    if etree_elem.text == None and len(etree_elem.attrib):
+        return etree_elem.tag, etree_elem.attrib
+    return etree_elem.tag, dict(map(xml_to_dict, etree_elem)) or etree_elem.text
 
 url = 'http://127.0.0.1:5000/stations/'
 headers = {"Content-Type": "application/json; charset=utf-8"}
