@@ -51,7 +51,7 @@ class StudentListResource(Resource):
     def post(self):
         new_student = Student(
             name=request.json['name'],
-            grade=request.json['grade']
+            grade=request.json['grade'],
             age=request.json['age']
         )
         db.session.add(new_student)
