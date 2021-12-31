@@ -11,125 +11,88 @@ db = SQLAlchemy(app)
 ma = Marshmallow(app)
 api = Api(app)
 
-class Student(db.Model):
+class Station(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    abbr = db.Column(db.String(255))
     name = db.Column(db.String(50))
-    grade = db.Column(db.String(255))
-    age = db.Column(db.String(255))
+    gtfs_latitude = db.Column(db.String(255))
+    gtfs_longitude = db.Column(db.String(255))
+    address = db.Column(db.String(255))
+    city = db.Column(db.String(500))
+    county = db.Column(db.String(255))
+    state = db.Column(db.String(255))
+    zipcode = db.Column(db.String(255))
+
 
     def __repr__(self):
-        return '<Student %s>' % self.name
-
-class Teacher(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50))
-    school = db.Column(db.String(255))
-
-    def __repr__(self):
-        return '<Teacher %s>' % self.name
+        return '<Station %s>' % self.name
     
-class StudentSchema(ma.Schema):
+class StationSchema(ma.Schema):
     class Meta:
-        fields = ("id", "name", "grade", "age")
+        fields = ("id", "abbr", "name", "gtfs_latitude", "gtfs_longitude", "address", "city", "county", "state", "zipcode")
 
-class TeacherSchema(ma.Schema):
-    class Meta:
-        fields = ("id", "name", "school")
+station_schema = StationSchema()
+stations_schema = StationSchema(many=True)
 
-student_schema = StudentSchema()
-students_schema = StudentSchema(many=True)
-
-teacher_schema = TeacherSchema()
-teachers_schema = TeacherSchema(many=True)
-
-
-class StudentListResource(Resource):
+class StationListResource(Resource):
     def get(self):
-        students = Student.query.all()
-        return students_schema.dump(students)
+        stations = Station.query.all()
+        return stations_schema.dump(stations)
 
     def post(self):
-        new_student = Student(
+        new_station = Station(
+            abbr=request.json['abbr'],
             name=request.json['name'],
-            grade=request.json['grade'],
-            age=request.json['age']
+            gtfs_latitude=request.json['gtfs_latitude'],
+            gtfs_longitude=request.json['gtfs_longitude'],
+            address=request.json['address'],
+            city=request.json['city'],
+            county=request.json['county'],
+            state=request.json['state'],
+            zipcode=request.json['zipcode'],
         )
-        db.session.add(new_student)
+        db.session.add(new_station)
         db.session.commit()
-        return student_schema.dump(new_student)
+        return station_schema.dump(new_station)
 
+class StationResource(Resource):
+    def get(self, station_id):
+        station = Station.query.get_or_404(station_id)
+        return station_schema.dump(station)
 
-class StudentResource(Resource):
-    def get(self, student_id):
-        student = Student.query.get_or_404(student_id)
-        return student_schema.dump(student)
+    def patch(self, station_id):
+        station = Station.query.get_or_404(station_id)
 
-    def patch(self, student_id):
-        student = Student.query.get_or_404(student_id)
-
+        if 'abbr' in request.json:
+            station.abbr = request.json['abbr']
         if 'name' in request.json:
-            student.name = request.json['name']
-        if 'grade' in request.json:
-            student.grade = request.json['grade']
-        if 'age' in request.json:
-            student.age = request.json['age']
-
+            station.name = request.json['name']
+        if 'gtfs_latitude' in request.json:
+            station.gtfs_latitude = request.json['gtfs_latitude']
+        if 'gtfs_longitude' in request.json:
+            station.gtfs_longitude = request.json['gtfs_longitude']
+        if 'address' in request.json:
+            station.address = request.json['address']
+        if 'city' in request.json:
+            station.city = request.json['city']
+        if 'county' in request.json:
+            station.county = request.json['county']
+        if 'state' in request.json:
+            station.state = request.json['state']
+        if 'zipcode' in request.json:
+            station.zipcode = request.json['zipcode']
+            
         db.session.commit()
-        return student_schema.dump(student)
+        return station_schema.dump(station)
 
-    def delete(self, student_id):
-        student = Student.query.get_or_404(student_id)
-        db.session.delete(student)
+    def delete(self, station_id):
+        station = Station.query.get_or_404(station_id)
+        db.session.delete(station)
         db.session.commit()
         return '', 204
 
-class TeacherListResource(Resource):
-    def get(self):
-        teachers = Teacher.query.all()
-        return teachers_schema.dump(teachers)
-
-    def post(self):
-        new_teacher = Teacher(
-            name=request.json['name'],
-            school=request.json['school']
-        )
-        db.session.add(new_teacher)
-        db.session.commit()
-        return teacher_schema.dump(new_teacher)
-
-
-class TeacherResource(Resource):
-    def get(self, teacher_id):
-        teacher = Teacher.query.get_or_404(teacher_id)
-        return teacher_schema.dump(teacher)
-
-    def patch(self, teacher_id):
-        teacher = Teacher.query.get_or_404(student_id)
-
-        if 'name' in request.json:
-            teacher.name = request.json['name']
-        if 'school' in request.json:
-            teacher.grade = request.json['school']
-
-        db.session.commit()
-        return teacher_schema.dump(teacher)
-
-    def delete(self, teacher_id):
-        teacher = Teacher.query.get_or_404(teacher_id)
-        db.session.delete(teacher)
-        db.session.commit()
-        return '', 204
-
-api.add_resource(StudentListResource, '/students/')
-api.add_resource(StudentResource, '/students/<int:student_id>/')
-api.add_resource(TeacherListResource, '/teachers/')
-api.add_resource(TeacherResource, '/teachers/<int:teacher_id>/')
-
+api.add_resource(StationListResource, '/stations/')
+api.add_resource(StationResource, '/stations/<int:station_id>/')
 
 if __name__ == '__main__':
     app.run(debug=True)
-
-
-
-
-
