@@ -2,10 +2,10 @@ import requests
 import json
 from bart_api import BartApi
 
-def xml_to_dict(etree_elem):
-    if etree_elem.text == None and len(etree_elem.attrib):
-        return etree_elem.tag, etree_elem.attrib
-    return etree_elem.tag, dict(map(xml_to_dict, etree_elem)) or etree_elem.text
+def xml_to_dict(elem):
+    if elem.text == None and len(elem.attrib):
+        return elem.tag, elem.attrib
+    return elem.tag, dict(map(xml_to_dict, elem)) or elem.text
 
 bart = BartApi()
 stations = bart.get_stations()
