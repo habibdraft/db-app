@@ -5,8 +5,8 @@ from flask_restful import Api, Resource
 import config
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = config.postgresConn
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config["SQLALCHEMY_DATABASE_URI"] = config.postgresConn
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
 api = Api(app)
@@ -25,7 +25,7 @@ class Station(db.Model):
 
 
     def __repr__(self):
-        return '<Station %s>' % self.name
+        return "<Station %s>" % self.name
     
 class StationSchema(ma.Schema):
     class Meta:
@@ -41,15 +41,15 @@ class StationListResource(Resource):
 
     def post(self):
         new_station = Station(
-            abbr=request.json['abbr'],
-            name=request.json['name'],
-            gtfs_latitude=request.json['gtfs_latitude'],
-            gtfs_longitude=request.json['gtfs_longitude'],
-            address=request.json['address'],
-            city=request.json['city'],
-            county=request.json['county'],
-            state=request.json['state'],
-            zipcode=request.json['zipcode'],
+            abbr=request.json["abbr"],
+            name=request.json["name"],
+            gtfs_latitude=request.json["gtfs_latitude"],
+            gtfs_longitude=request.json["gtfs_longitude"],
+            address=request.json["address"],
+            city=request.json["city"],
+            county=request.json["county"],
+            state=request.json["state"],
+            zipcode=request.json["zipcode"],
         )
         db.session.add(new_station)
         db.session.commit()
@@ -63,24 +63,24 @@ class StationResource(Resource):
     def patch(self, station_id):
         station = Station.query.get_or_404(station_id)
 
-        if 'abbr' in request.json:
-            station.abbr = request.json['abbr']
-        if 'name' in request.json:
-            station.name = request.json['name']
-        if 'gtfs_latitude' in request.json:
-            station.gtfs_latitude = request.json['gtfs_latitude']
-        if 'gtfs_longitude' in request.json:
-            station.gtfs_longitude = request.json['gtfs_longitude']
-        if 'address' in request.json:
-            station.address = request.json['address']
-        if 'city' in request.json:
-            station.city = request.json['city']
-        if 'county' in request.json:
-            station.county = request.json['county']
-        if 'state' in request.json:
-            station.state = request.json['state']
-        if 'zipcode' in request.json:
-            station.zipcode = request.json['zipcode']
+        if "abbr" in request.json:
+            station.abbr = request.json["abbr"]
+        if "name" in request.json:
+            station.name = request.json["name"]
+        if "gtfs_latitude" in request.json:
+            station.gtfs_latitude = request.json["gtfs_latitude"]
+        if "gtfs_longitude" in request.json:
+            station.gtfs_longitude = request.json["gtfs_longitude"]
+        if "address" in request.json:
+            station.address = request.json["address"]
+        if "city" in request.json:
+            station.city = request.json["city"]
+        if "county" in request.json:
+            station.county = request.json["county"]
+        if "state" in request.json:
+            station.state = request.json["state"]
+        if "zipcode" in request.json:
+            station.zipcode = request.json["zipcode"]
             
         db.session.commit()
         return station_schema.dump(station)
@@ -89,10 +89,10 @@ class StationResource(Resource):
         station = Station.query.get_or_404(station_id)
         db.session.delete(station)
         db.session.commit()
-        return '', 204
+        return "", 204
 
-api.add_resource(StationListResource, '/stations/')
-api.add_resource(StationResource, '/stations/<int:station_id>/')
+api.add_resource(StationListResource, "/stations/")
+api.add_resource(StationResource, "/stations/<int:station_id>/")
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(debug=True)
