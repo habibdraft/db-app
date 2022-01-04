@@ -16,5 +16,5 @@ headers = {"Content-Type": "application/json; charset=utf-8"}
 for station in stations:
     d = xml_to_dict(station)
     response = requests.post(url, headers=headers, json=d[1])
-    print("Status Code", response.status_code)
-    print("JSON Response ", response.json())
+    print("Status code ", response.status_code)
+    print("JSON response ", response.json())
